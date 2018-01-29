@@ -7,22 +7,36 @@
 #include <map>
 #include <iterator>
 
+/**	
+	Default Constructor gives random numbers between 1 and 10	
+	@author Jesse Quijano
+*/
 RandomNumberGenerator::RandomNumberGenerator()
 {
-	setBounds(1, 10);  //default constructure gives a number between 1 and 10
+	setBounds(1, 10);
 }
 
+/**
+	Constructor taking low and high values for the random number.
+	@author Jesse Quijano
+*/
 RandomNumberGenerator::RandomNumberGenerator(long lowValue, long highValue)
 {
 	if (!setBounds(lowValue, highValue))
 		throw std::invalid_argument("Values out of bounds.");
 }
-
+/**
+	Default destructor.
+	@author Jesse Quijano
+*/
 RandomNumberGenerator::~RandomNumberGenerator()
 {
 	//is there anything to free??
 }
 
+/**
+	@author Jesse Quijano
+*/
 bool RandomNumberGenerator::setBounds(long lowValue, long highValue)
 {
 	if (lowValue > highValue)
@@ -37,6 +51,9 @@ bool RandomNumberGenerator::setBounds(long lowValue, long highValue)
 	return true;
 }
 
+/**
+	@author Jesse Quijano
+*/
 void RandomNumberGenerator::Init()
 {	
 	std::random_device rd;
@@ -46,12 +63,17 @@ void RandomNumberGenerator::Init()
 	_mTwister = mt;
 	_dist = dist;
 }
-
+/**
+	@author Jesse Quijano
+*/
 long RandomNumberGenerator::GenerateNumber()
 {	
 	return _dist(_mTwister);
 }
 
+/**
+	@author Jesse Quijano
+*/
 std::vector<long> RandomNumberGenerator::GenerateMultiple(long qty)
 {
 	std::vector<long> list; //create a vector that will hold all of the generated numbers
@@ -63,6 +85,9 @@ std::vector<long> RandomNumberGenerator::GenerateMultiple(long qty)
 	return _result = list;  //store vector for later reference, if necessary, and return
 }
 
+/**
+	@author Jesse Quijano
+*/
 std::vector<long> RandomNumberGenerator::GetUniqueNumbers(std::vector<long> arry)
 {
 	arry = SortResults(arry); //created method to allow ascending or descending
@@ -71,7 +96,7 @@ std::vector<long> RandomNumberGenerator::GetUniqueNumbers(std::vector<long> arry
 }
 
 /**
-*
+	@author Jesse Quijano
 */
 std::vector<long> RandomNumberGenerator::SortResults(std::vector<long> arry, std::string sortDir) //ASC or DESC
 {
@@ -99,10 +124,11 @@ std::vector<long> RandomNumberGenerator::SortResults(std::vector<long> arry)
 	return SortResults(arry, "ASC");
 }
 
-/** Because of the limitations with sorting a map, borrowed this clean solution to flip the positions allowing sort on total.
-No sense re-inventing the wheel.
+/** 
+	Because of the limitations with sorting a map, borrowed this clean solution to flip the positions allowing sort on total.
+	No sense re-inventing the wheel.
 
-https://stackoverflow.com/a/5056797/1732853
+    @author https://stackoverflow.com/a/5056797/1732853
 */
 template<typename A, typename B>
 std::pair<B, A> flip_pair(const std::pair<A, B> &p)
@@ -119,6 +145,10 @@ std::multimap<B, A> flip_map(const std::map<A, B> &src)
 	return dst;
 }
 /* end */
+
+/**
+	@author Jesse Quijano
+*/
 std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 {
 	std::map<long,int> uniques;
@@ -139,7 +169,7 @@ std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 				break;
 
 			_highCount = row->first;
-			tops.push_back(row->second);  //not the most efficient to resize, but there shouldn't be many.
+			tops.push_back(row->second);
 		}
 
 		lastCount = row->first;
