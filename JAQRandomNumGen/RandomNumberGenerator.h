@@ -8,6 +8,7 @@ class RandomNumberGenerator
 private:
 	long _high;
 	long _low;
+	long _highCount;
 	std::vector<long> _result;
 	std::mt19937 _mTwister;
 	std::uniform_real_distribution<double> _dist;
@@ -23,5 +24,8 @@ public:
 	std::vector<long> SortResults(std::vector<long>, std::string);
 	std::vector<long> SortResults(std::vector<long>);
 	std::vector<long> GetTopNumbers(std::vector<long>);
+	long GetTopMatchCount();
+	long GetRangeLow();
+	long GetRangeHigh();
 };
 

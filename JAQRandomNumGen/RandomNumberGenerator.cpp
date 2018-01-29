@@ -30,6 +30,7 @@ bool RandomNumberGenerator::setBounds(long lowValue, long highValue)
 
 	_high = highValue;
 	_low = lowValue;
+	_highCount = 0;
 
 	Init();
 
@@ -98,10 +99,11 @@ std::vector<long> RandomNumberGenerator::SortResults(std::vector<long> arry)
 	return SortResults(arry, "ASC");
 }
 
-/** Because of the limitations with sorting a map, borrowed this clean solution to flip the positions allowing sort on total
+/** Because of the limitations with sorting a map, borrowed this clean solution to flip the positions allowing sort on total.
+No sense re-inventing the wheel.
+
 https://stackoverflow.com/a/5056797/1732853
 */
-
 template<typename A, typename B>
 std::pair<B, A> flip_pair(const std::pair<A, B> &p)
 {
@@ -116,30 +118,27 @@ std::multimap<B, A> flip_map(const std::map<A, B> &src)
 		flip_pair<A, B>);
 	return dst;
 }
-
+/* end */
 std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 {
 	std::map<long,int> uniques;
 	std::vector<long> tops;
 
 	//uniques and counts, voila!
-	for_each(arry.begin(), arry.end(), [&uniques](long val) { 
-		uniques[val]++; 
-	});
+	for_each(arry.begin(), arry.end(), [&uniques](long val) { uniques[val]++; });
 
-	//reverse 
+	//reverse position of the random numbers and counts
 	std::multimap<int, long> dst = flip_map(uniques);
 
 	int lastCount = 0;
-	int highWater = 0;
 	for (auto row = dst.rbegin(); row != dst.rend(); ++row) {
 		std::cout << row->first << ": " << row->second << std::endl;
-		if (lastCount != row->first || highWater == row->first) {
+		if (lastCount != row->first || _highCount == row->first) {
 			
-			if (highWater > 0 && highWater != row->first)
+			if (_highCount > 0 && _highCount != row->first)
 				break;
 
-			highWater = row->first;
+			_highCount = row->first;
 			tops.push_back(row->second);  //not the most efficient to resize, but there shouldn't be many.
 		}
 
@@ -149,4 +148,18 @@ std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 	return tops;
 }
 
+long RandomNumberGenerator::GetTopMatchCount()
+{
+	return _highCount;
+}
+
+long RandomNumberGenerator::GetRangeHigh()
+{
+	return _high;
+}
+
+long RandomNumberGenerator::GetRangeLow()
+{
+	return _low;
+}
 
