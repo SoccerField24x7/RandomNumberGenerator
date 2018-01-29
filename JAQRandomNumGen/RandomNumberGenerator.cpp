@@ -5,6 +5,7 @@
 #include <functional>
 #include <algorithm>
 #include <map>
+#include <iterator>
 
 RandomNumberGenerator::RandomNumberGenerator()
 {
@@ -97,22 +98,55 @@ std::vector<long> RandomNumberGenerator::SortResults(std::vector<long> arry)
 	return SortResults(arry, "ASC");
 }
 
+/** Because of the limitations with sorting a map, borrowed this clean solution to flip the positions allowing sort on total
+https://stackoverflow.com/a/5056797/1732853
+*/
+
+template<typename A, typename B>
+std::pair<B, A> flip_pair(const std::pair<A, B> &p)
+{
+	return std::pair<B, A>(p.second, p.first);
+}
+
+template<typename A, typename B>
+std::multimap<B, A> flip_map(const std::map<A, B> &src)
+{
+	std::multimap<B, A> dst;
+	std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()),
+		flip_pair<A, B>);
+	return dst;
+}
+
 std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 {
-	//create a map in DESC
-	std::map<long,int, std::greater<int>> uniques;
+	std::map<long,int> uniques;
+	std::vector<long> tops;
 
 	//uniques and counts, voila!
 	for_each(arry.begin(), arry.end(), [&uniques](long val) { 
 		uniques[val]++; 
 	});
 
-	//sort by value, DESC
-	//std::sort(uniques.begin(), uniques.end());
+	//reverse 
+	std::multimap<int, long> dst = flip_map(uniques);
 
-	//take the top matches
-	int topCount = uniques[0];
+	int lastCount = 0;
+	int highWater = 0;
+	for (auto row = dst.rbegin(); row != dst.rend(); ++row) {
+		std::cout << row->first << ": " << row->second << std::endl;
+		if (lastCount != row->first || highWater == row->first) {
+			
+			if (highWater > 0 && highWater != row->first)
+				break;
 
+			highWater = row->first;
+			tops.push_back(row->second);  //not the most efficient to resize, but there shouldn't be many.
+		}
 
-	return std::vector<long>();
+		lastCount = row->first;
+	}
+
+	return tops;
 }
+
+
