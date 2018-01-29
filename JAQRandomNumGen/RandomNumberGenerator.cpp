@@ -162,7 +162,7 @@ std::vector<long> RandomNumberGenerator::GetTopNumbers(std::vector<long> arry)
 
 	int lastCount = 0;
 	for (auto row = dst.rbegin(); row != dst.rend(); ++row) {
-		std::cout << row->first << ": " << row->second << std::endl;
+		//std::cout << row->first << ": " << row->second << std::endl;
 		if (lastCount != row->first || _highCount == row->first) {
 			
 			if (_highCount > 0 && _highCount != row->first)
